@@ -1,44 +1,20 @@
 from functools import reduce
 
-from utils import yield_lines
-
-
-class Reducer:
-    increase = None
-    index = 0
-
-    def __call__(self, prev_el: str, el: str):
-        prev_el, el = int(prev_el), int(el)
-
-        if prev_el == el:
-            raise Exception()
-
-        if self.increase is None:
-            self.increase = el > prev_el
-        elif self.increase and el < prev_el:
-            raise Exception()
-        elif not self.increase and el > prev_el:
-            raise Exception()
-        
-        if abs(el - prev_el) > 3:
-            raise Exception()
-        
-        self.index += 1
-        return el
+from common import SafetyChecker, yield_lines
 
 
 def _process_line(line):
     line = line.split()
-    r = Reducer()
+    check = SafetyChecker()
     try:
-        reduce(r, line)
+        reduce(check, line)
     except Exception:
-        for i in (r.index - 1, r.index, r.index + 1):
-            r = Reducer()
+        for i in (check.index - 1, check.index, check.index + 1):
+            check = SafetyChecker()
             curr_line = list(line)
             curr_line.pop(i)
             try:
-                reduce(r, curr_line)
+                reduce(check, curr_line)
             except Exception:
                 pass
             else:

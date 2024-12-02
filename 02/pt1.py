@@ -1,35 +1,14 @@
 from functools import reduce
 
-from utils import yield_lines
+from common import SafetyChecker, yield_lines
 
-
-class Reducer:
-    increase = None
-
-    def __call__(self, prev_el: str, el: str):
-        prev_el, el = int(prev_el), int(el)
-
-        if prev_el == el:
-            raise Exception()
-
-        if self.increase is None:
-            self.increase = el > prev_el
-        elif self.increase and el < prev_el:
-            raise Exception()
-        elif not self.increase and el > prev_el:
-            raise Exception()
-        
-        if abs(el - prev_el) > 3:
-            raise Exception()
-        
-        return el
 
 def solve(file_path: str) -> int:
     safe_count = 0
     for line in yield_lines(file_path):
-        r = Reducer()
+        check = SafetyChecker()
         try:
-            reduce(r, line.split())
+            reduce(check, line.split())
         except Exception:
             pass
         else:
